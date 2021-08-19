@@ -1,0 +1,23 @@
+#include "resids.h"
+
+FORM MainForm AT (0 0 160 160)
+USABLE
+BEGIN
+    FIELD ID OutputField AT (0 0 153 145)
+        MULTIPLELINES
+        // NONEDITABLE
+        UNDERLINED
+        HASSCROLLBAR
+        MAXCHARS 256
+        DYNAMICSIZE
+
+    BUTTON "Run" RunButton AT(1 147 AUTO AUTO) FRAME
+
+    SCROLLBAR Scrollbar AT (153 0 7 145)
+        VALUE 0
+        MIN 0
+        MAX 100
+        PAGESIZE 25
+
+    GRAFFITISTATEINDICATOR AT (150 150)
+END

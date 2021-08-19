@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "palmos.h": "c"
+    },
+    "editor.formatOnSave": true
+}
