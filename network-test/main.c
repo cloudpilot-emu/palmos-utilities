@@ -48,10 +48,6 @@ UInt32 PilotMain(UInt16 cmd, void* cmdPBP, UInt16 launchFlags) {
             }
 
             if (FrmDispatchEvent(&event)) continue;
-
-            //  Normally, we would do other event processing here.
-
-            // Return from PilotMain when an appStopEvent is received.
         } while (event.eType != appStopEvent);
 
         FrmCloseAllForms();
