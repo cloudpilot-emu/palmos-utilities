@@ -13,20 +13,21 @@ SOURCE = main.c debug.c
 PILRC_SOURCE = nettest.rcp
 RESOURCE_HEADERS = resids.h
 
+PRC = $(NAME).prc
 DEFINITION_FILE = $(NAME).def
 BINARY = $(NAME)
 OBJECTS = $(SOURCE:.c=.o)
 RESOURCE_DBS = $(PILRC_SOURCE:.rcp=.ro)
 
-all: $(NAME).prc
+all: $(PRC)
 
-install: $(NAME).prc
+install: $(PRC)
 	$(XFER) -p net: -i $<
 
 clean:
-	-rm -f $(BINARY) $(OBJECTS) $(RESOURCE_DBS)
+	-rm -f $(BINARY) $(OBJECTS) $(RESOURCE_DBS) $(PRC)
 
-$(NAME).prc: $(BINARY) $(RESOURCE_DBS)
+$(PRC): $(BINARY) $(RESOURCE_DBS)
 	$(BUILDPRC) $(DEFINITION_FILE) -o $@ $^
 
 $(BINARY): $(OBJECTS)
