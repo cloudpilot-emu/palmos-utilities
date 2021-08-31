@@ -1,6 +1,9 @@
 CC = m68k-palmos-gcc
 CFLAGS = -Wall -std=gnu9x -Werror $(if $(DEBUG),-DDEBUG,)
 
+LD = m68k-palmos-gcc
+LDFLAGS =
+
 PILRC = pilrc
 PILRCOPT = -q -ro
 
@@ -31,7 +34,7 @@ $(PRC): $(BINARY) $(RESOURCE_DBS)
 	$(BUILDPRC) $(DEFINITION_FILE) -o $@ $^
 
 $(BINARY): $(OBJECTS)
-	$(CC) $(CFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) $^ -o $@
 
 $(RESOURCE_DBS) : %.ro : %.rcp $(RESOURCE_HEADERS)
 	$(PILRC) $(PILRCOPT) $<

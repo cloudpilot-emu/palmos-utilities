@@ -15,4 +15,4 @@ void DebugLog(const char* fmt, ...);
 const char* EventName(eventsEnum event);
 #endif
 
-#endif _DEBUG_H_
+#endif  // _DEBUG_H_
