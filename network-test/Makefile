@@ -1,7 +1,7 @@
-CC = m68k-palmos-gcc
-CFLAGS = -Wall -std=gnu9x -Werror $(if $(DEBUG),-DDEBUG,)
+CXX = m68k-palmos-g++ -std=gnu++98
+CXXFLAGS = -Os -Wall  -Werror $(if $(DEBUG),-DDEBUG,)
 
-LD = m68k-palmos-gcc
+LD = m68k-palmos-g++
 LDFLAGS =
 
 PILRC = pilrc
@@ -12,14 +12,14 @@ XFER = pilot-xfer
 BUILDPRC = build-prc
 
 NAME = nettest
-SOURCE = main.c debug.c
+SOURCE = main.cxx debug.cxx
 PILRC_SOURCE = nettest.rcp
 RESOURCE_HEADERS = resids.h
 
 PRC = $(NAME).prc
 DEFINITION_FILE = $(NAME).def
 BINARY = $(NAME)
-OBJECTS = $(SOURCE:.c=.o)
+OBJECTS = $(SOURCE:.cxx=.o)
 RESOURCE_DBS = $(PILRC_SOURCE:.rcp=.ro)
 
 all: $(PRC)
@@ -39,5 +39,5 @@ $(BINARY): $(OBJECTS)
 $(RESOURCE_DBS) : %.ro : %.rcp $(RESOURCE_HEADERS)
 	$(PILRC) $(PILRCOPT) $<
 
-$(OBJECTS) : %.o : %.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+$(OBJECTS) : %.o : %.cxx
+	$(CXX) $(CXXFLAGS) -c -o $@ $<

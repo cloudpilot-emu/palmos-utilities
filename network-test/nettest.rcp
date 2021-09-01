@@ -8,8 +8,6 @@ BEGIN
         // NONEDITABLE
         UNDERLINED
         HASSCROLLBAR
-        MAXCHARS 256
-        DYNAMICSIZE
 
     BUTTON "Run" RunButton AT(1 147 AUTO AUTO) FRAME
 

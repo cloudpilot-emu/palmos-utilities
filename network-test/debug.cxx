@@ -11,7 +11,7 @@ void DebugLog(const char* fmt, ...) {
 
     va_start(args, fmt);
 
-    if (StrVPrintF(buffer, fmt, args) > 255)
+    if (StrVPrintF(buffer, fmt, static_cast<_Palm_va_list>(args)) > 255)
         DbgMessage("DebugLog: buffer overflowed, memory corruption ahead");
     else
         DbgMessage(buffer);

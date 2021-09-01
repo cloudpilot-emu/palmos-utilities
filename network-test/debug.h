@@ -7,7 +7,7 @@
 #ifdef DEBUG
     #define LOG DebugLog
 #else
-    #define LOG(...)
+    #define LOG(ARGS...)
 #endif
 
 #ifdef DEBUG
