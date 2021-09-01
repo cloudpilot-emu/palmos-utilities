@@ -3,6 +3,8 @@
 #include "debug.h"
 #include "resids.h"
 
+#define FIELD_BUFFER_SIZE 512
+
 template <class T>
 T min(T x, T y) {
     return x < y ? x : y;
@@ -27,23 +29,17 @@ void UpdateScrollbar(FormType* form) {
 }
 
 void InitField(FormType* form) {
-    MemHandle handle = MemHandleNew(256);
+    MemHandle handle = MemHandleNew(FIELD_BUFFER_SIZE);
     char* fieldContent = static_cast<char*>(MemHandleLock(handle));
 
-    MemSet(fieldContent, 256, 0);
-
-    for (char i = 0; i < 26; i++) {
-        fieldContent[2 * i] = 'a' + i;
-        fieldContent[2 * i + 1] = '\n';
-    }
-
+    MemSet(fieldContent, FIELD_BUFFER_SIZE, 0);
     MemHandleUnlock(handle);
 
     FieldType* field =
         static_cast<FieldType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, OutputField)));
 
     FldSetTextHandle(field, handle);
-    FldSetMaxChars(field, 255);
+    FldSetMaxChars(field, FIELD_BUFFER_SIZE - 1);
 }
 
 void ScrollUp(FormType* form) {
@@ -79,6 +75,62 @@ void HandleScrollBarRepeat(FormType* form, const EventType& event) {
     FldScrollField(field, Abs(delta), delta > 0 ? winDown : winUp);
 }
 
+void Printf(const char* fmt, ...) {
+    char buffer[256];
+    va_list args;
+
+    va_start(args, fmt);
+
+    UInt16 len = StrVPrintF(buffer, fmt, static_cast<_Palm_va_list>(args)) + 1;
+    if (StrVPrintF(buffer, fmt, static_cast<_Palm_va_list>(args)) > 256) {
+        LOG("VPrint: buffer overflowed, memory corruption ahead");
+
+        return;
+    }
+
+    FormType* form = FrmGetActiveForm();
+    FieldType* field =
+        static_cast<FieldType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, OutputField)));
+
+    MemHandle handle = FldGetTextHandle(field);
+    char* fieldBuffer = static_cast<char*>(MemHandleLock(handle));
+
+    UInt16 cursor = 0;
+    while (fieldBuffer[cursor] != 0 && cursor < FIELD_BUFFER_SIZE) cursor++;
+
+    if (FIELD_BUFFER_SIZE - cursor >= len)
+        MemMove(fieldBuffer + cursor, buffer, len);
+    else {
+        UInt16 clearTo = 0;
+        while ((fieldBuffer[clearTo] != '\n' && fieldBuffer[clearTo] != 0) ||
+               (FIELD_BUFFER_SIZE - cursor + clearTo) < len)
+            clearTo++;
+
+        if (fieldBuffer[clearTo] == 0)
+            MemMove(fieldBuffer, buffer, len);
+        else {
+            cursor -= (clearTo + 1);
+
+            MemMove(fieldBuffer, fieldBuffer + clearTo + 1, cursor);
+            MemMove(fieldBuffer + cursor, buffer, len);
+        }
+    }
+
+    MemHandleUnlock(handle);
+
+    FldSetTextHandle(field, handle);
+
+    UInt16 scrollPos, textHeight, fieldHeight;
+    FldGetScrollValues(field, &scrollPos, &textHeight, &fieldHeight);
+
+    if (textHeight > fieldHeight)
+        FldScrollField(field, fieldHeight - textHeight, winDown);
+    else
+        FldDrawField(field);
+
+    UpdateScrollbar(form);
+}
+
 Boolean MainFormHandler(EventType* event) {
     FormType* form = FrmGetActiveForm();
 
@@ -112,6 +164,12 @@ Boolean MainFormHandler(EventType* event) {
 
         case sclRepeatEvent:
             HandleScrollBarRepeat(form, *event);
+            return false;
+
+        case ctlSelectEvent:
+            if (event->data.ctlSelect.controlID == RunButton)
+                Printf("Hello world %i\n", SysRandom(0));
+
             return false;
 
         default:

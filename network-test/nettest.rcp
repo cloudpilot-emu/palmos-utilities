@@ -5,7 +5,7 @@ USABLE
 BEGIN
     FIELD ID OutputField AT (0 0 153 145)
         MULTIPLELINES
-        // NONEDITABLE
+        NONEDITABLE
         UNDERLINED
         HASSCROLLBAR
 
