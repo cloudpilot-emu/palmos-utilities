@@ -13,6 +13,19 @@ T max(T x, T y) {
     return x > y ? x : y;
 }
 
+void UpdateScrollbar(FormType* form) {
+    ScrollBarType* scrollBar =
+        static_cast<ScrollBarType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, Scrollbar)));
+
+    FieldType* field =
+        static_cast<FieldType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, OutputField)));
+
+    UInt16 scrollPos, textHeight, fieldHeight;
+    FldGetScrollValues(field, &scrollPos, &textHeight, &fieldHeight);
+
+    SclSetScrollBar(scrollBar, scrollPos, 0, max<Int16>(textHeight - fieldHeight, 0), fieldHeight);
+}
+
 void InitField(FormType* form) {
     MemHandle handle = MemHandleNew(256);
     char* fieldContent = static_cast<char*>(MemHandleLock(handle));
@@ -31,8 +44,6 @@ void InitField(FormType* form) {
 
     FldSetTextHandle(field, handle);
     FldSetMaxChars(field, 255);
-
-    FrmDrawForm(form);
 }
 
 void ScrollUp(FormType* form) {
@@ -40,6 +51,8 @@ void ScrollUp(FormType* form) {
         static_cast<FieldType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, OutputField)));
 
     FldScrollField(field, FldGetVisibleLines(field) / 2, winUp);
+
+    UpdateScrollbar(form);
 }
 
 void ScrollDown(FormType* form) {
@@ -49,10 +62,21 @@ void ScrollDown(FormType* form) {
     UInt16 scrollPos, textHeight, fieldHeight;
     FldGetScrollValues(field, &scrollPos, &textHeight, &fieldHeight);
 
-    UInt16 delta =
+    const UInt16 delta =
         min<UInt16>(fieldHeight / 2, max<Int16>(textHeight - scrollPos - fieldHeight, 0));
 
     FldScrollField(field, delta, winDown);
+
+    UpdateScrollbar(form);
+}
+
+void HandleScrollBarRepeat(FormType* form, const EventType& event) {
+    FieldType* field =
+        static_cast<FieldType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, OutputField)));
+
+    const Int16 delta = event.data.sclRepeat.newValue - event.data.sclRepeat.value;
+
+    FldScrollField(field, Abs(delta), delta > 0 ? winDown : winUp);
 }
 
 Boolean MainFormHandler(EventType* event) {
@@ -61,6 +85,9 @@ Boolean MainFormHandler(EventType* event) {
     switch (event->eType) {
         case frmOpenEvent:
             InitField(form);
+            UpdateScrollbar(form);
+
+            FrmDrawForm(form);
 
             return true;
 
@@ -77,6 +104,14 @@ Boolean MainFormHandler(EventType* event) {
                 }
             }
 
+            return false;
+
+        case fldChangedEvent:
+            UpdateScrollbar(form);
+            return false;
+
+        case sclRepeatEvent:
+            HandleScrollBarRepeat(form, *event);
             return false;
 
         default:
