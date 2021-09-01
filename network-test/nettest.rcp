@@ -6,7 +6,6 @@ BEGIN
     FIELD ID OutputField AT (0 0 153 145)
         MULTIPLELINES
         NONEDITABLE
-        UNDERLINED
         HASSCROLLBAR
 
     BUTTON "Run" RunButton AT(1 147 AUTO AUTO) FRAME

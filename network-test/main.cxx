@@ -32,7 +32,7 @@ void InitField(FormType* form) {
     MemHandle handle = MemHandleNew(FIELD_BUFFER_SIZE);
     char* fieldContent = static_cast<char*>(MemHandleLock(handle));
 
-    MemSet(fieldContent, FIELD_BUFFER_SIZE, 0);
+    StrCopy(fieldContent, "Initialized.\n\n");
     MemHandleUnlock(handle);
 
     FieldType* field =
