@@ -131,6 +131,29 @@ void Printf(const char* fmt, ...) {
     UpdateScrollbar(form);
 }
 
+void TestSocketOptionGet() { Printf("Testing NetLibSocketOptionGet...\n\n"); }
+
+void TestReceivePB() { Printf("Testing NetLibReceivePB...\n\n"); }
+
+void TestSendPB() { Printf("Testing NetLibSendPB...\n\n"); }
+
+void TestDmSend() { Printf("Testing NetLibDmSend...\n\n"); }
+
+void DispatchCommand(FormType* form) {
+    ControlType* triggerCtl =
+        static_cast<ControlType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, CommandTrigger)));
+
+    const char* command = CtlGetLabel(triggerCtl);
+    if (StrCompare(command, CMD_TEST_SOCKET_OPTION_GET) == 0)
+        TestSocketOptionGet();
+    else if (StrCompare(command, CMD_TEST_DM_SEND) == 0)
+        TestDmSend();
+    else if (StrCompare(command, CMD_TEST_RECEIVE_PB) == 0)
+        TestReceivePB();
+    else if (StrCompare(command, CMD_TEST_SEND_PB) == 0)
+        TestSendPB();
+}
+
 Boolean MainFormHandler(EventType* event) {
     FormType* form = FrmGetActiveForm();
 
@@ -167,8 +190,7 @@ Boolean MainFormHandler(EventType* event) {
             return false;
 
         case ctlSelectEvent:
-            if (event->data.ctlSelect.controlID == RunButton)
-                Printf("Hello world %i\n", SysRandom(0));
+            if (event->data.ctlSelect.controlID == RunButton) DispatchCommand(form);
 
             return false;
 
