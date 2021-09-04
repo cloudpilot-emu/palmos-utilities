@@ -1,19 +1,17 @@
-CXX = m68k-palmos-g++ -std=gnu++98
-CXXFLAGS = -Os -Wall  -Werror $(if $(DEBUG),-DDEBUG,)
-
+CXX = m68k-palmos-g++
 LD = m68k-palmos-g++
-LDFLAGS =
-
 PILRC = pilrc
-PILRCOPT = -q -ro
-
 XFER = pilot-xfer
-
 BUILDPRC = build-prc
+
+CXXFLAGS = -Os -Wall -std=gnu++98 -Werror $(if $(DEBUG),-DDEBUG,)
+LDFLAGS =
+PILRCOPT = -q -ro
 
 NAME = nettest
 SOURCE = main.cxx debug.cxx
 PILRC_SOURCE = nettest.rcp
+RESOURCE_HEADERS = resource.h
 
 PRC = $(NAME).prc
 DEFINITION_FILE = $(NAME).def
@@ -21,7 +19,6 @@ BINARY = $(NAME)
 OBJECTS = $(SOURCE:.cxx=.o)
 DEPEND = $(SOURCE:.cxx=.d)
 RESOURCE_DBS = $(PILRC_SOURCE:.rcp=.ro)
-RESOURCE_HEADERS = resource.h
 
 all: $(PRC)
 
@@ -37,10 +34,13 @@ $(PRC): $(BINARY) $(RESOURCE_DBS)
 $(BINARY): $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@
 
-$(RESOURCE_DBS) : %.ro : %.rcp $(RESOURCE_HEADERS)
+%.ro : %.rcp $(RESOURCE_HEADERS)
 	$(PILRC) $(PILRCOPT) $<
 
-$(OBJECTS) : %.o : %.cxx
+%.o : %.cxx
 	$(CXX) $(CXXFLAGS) -MMD -c -o $@ $<
+
+.PHONY: all install clean
+.SUFFIXES:
 
 -include $(DEPEND)
