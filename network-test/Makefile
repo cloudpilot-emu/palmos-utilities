@@ -19,7 +19,9 @@ PRC = $(NAME).prc
 DEFINITION_FILE = $(NAME).def
 BINARY = $(NAME)
 OBJECTS = $(SOURCE:.cxx=.o)
+DEPEND = $(SOURCE:.cxx=.d)
 RESOURCE_DBS = $(PILRC_SOURCE:.rcp=.ro)
+RESOURCE_HEADERS = resource.h
 
 all: $(PRC)
 
@@ -27,7 +29,7 @@ install: $(PRC)
 	$(XFER) -p net: -i $<
 
 clean:
-	-rm -f $(BINARY) $(OBJECTS) $(RESOURCE_DBS) $(PRC)
+	-rm -f $(BINARY) $(OBJECTS) $(RESOURCE_DBS) $(PRC) $(DEPEND)
 
 $(PRC): $(BINARY) $(RESOURCE_DBS)
 	$(BUILDPRC) $(DEFINITION_FILE) -o $@ $^
@@ -35,12 +37,10 @@ $(PRC): $(BINARY) $(RESOURCE_DBS)
 $(BINARY): $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@
 
-$(RESOURCE_DBS) : %.ro : %.rcp
+$(RESOURCE_DBS) : %.ro : %.rcp $(RESOURCE_HEADERS)
 	$(PILRC) $(PILRCOPT) $<
 
 $(OBJECTS) : %.o : %.cxx
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -MMD -c -o $@ $<
 
-main.o: resource.h debug.h
-debug.o: debug.h
-$(PILRC_SOURCE): resource.h
+-include $(DEPEND)
