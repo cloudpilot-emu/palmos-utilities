@@ -1,7 +1,7 @@
 #include <PalmOS.h>
 
 #include "debug.h"
-#include "resids.h"
+#include "resource.h"
 
 #define FIELD_BUFFER_SIZE 512
 
