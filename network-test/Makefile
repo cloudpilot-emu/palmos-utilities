@@ -13,6 +13,7 @@ BUILDPRC = build-prc
 
 NAME = nettest
 SOURCE = main.cxx debug.cxx
+HEADERS = debug.h resids.h
 PILRC_SOURCE = nettest.rcp
 RESOURCE_HEADERS = resids.h
 
@@ -39,5 +40,5 @@ $(BINARY): $(OBJECTS)
 $(RESOURCE_DBS) : %.ro : %.rcp $(RESOURCE_HEADERS)
 	$(PILRC) $(PILRCOPT) $<
 
-$(OBJECTS) : %.o : %.cxx
+$(OBJECTS) : %.o : %.cxx $(HEADERS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<

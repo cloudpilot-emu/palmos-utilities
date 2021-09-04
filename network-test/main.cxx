@@ -83,7 +83,7 @@ void Printf(const char* fmt, ...) {
 
     UInt16 len = StrVPrintF(buffer, fmt, static_cast<_Palm_va_list>(args)) + 1;
     if (StrVPrintF(buffer, fmt, static_cast<_Palm_va_list>(args)) > 256) {
-        LOG("VPrint: buffer overflowed, memory corruption ahead");
+        LOG("Printf: buffer overflowed, memory corruption ahead");
 
         return;
     }
@@ -128,6 +128,22 @@ void Printf(const char* fmt, ...) {
     else
         FldDrawField(field);
 
+    UpdateScrollbar(form);
+}
+
+void Clear(FormType* form) {
+    FieldType* field =
+        static_cast<FieldType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, OutputField)));
+
+    MemHandle handle = FldGetTextHandle(field);
+    char* fieldBuffer = static_cast<char*>(MemHandleLock(handle));
+
+    fieldBuffer[0] = 0;
+
+    MemHandleUnlock(handle);
+
+    FldSetTextHandle(field, handle);
+    FldDrawField(field);
     UpdateScrollbar(form);
 }
 
@@ -190,7 +206,15 @@ Boolean MainFormHandler(EventType* event) {
             return false;
 
         case ctlSelectEvent:
-            if (event->data.ctlSelect.controlID == RunButton) DispatchCommand(form);
+            switch (event->data.ctlSelect.controlID) {
+                case RunButton:
+                    DispatchCommand(form);
+                    break;
+
+                case ClearButton:
+                    Clear(form);
+                    break;
+            }
 
             return false;
 
