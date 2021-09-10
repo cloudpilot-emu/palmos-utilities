@@ -1,7 +1,6 @@
 #include "resource.h"
 
 FORM MainForm AT (0 0 160 160)
-USABLE
 BEGIN
     FIELD ID OutputField AT (0 0 153 145)
         MULTIPLELINES
@@ -31,6 +30,29 @@ BEGIN
         MIN 0
         MAX 100
         PAGESIZE 25
+END
 
-    // GRAFFITISTATEINDICATOR AT (150 150)
+FORM DestinationForm AT (2 85 156 73) FRAME MODAL
+BEGIN
+    TITLE "Destination"
+
+    LABEL "Address:" AUTOID AT (5 20)
+    FIELD ID DestinationAddressField AT (45 PrevTop 70 AUTO)
+        EDITABLE
+        SINGLELINE
+        UNDERLINED
+        MAXCHARS 15
+
+    LABEL "Port:" AUTOID AT (5 PrevTop+15)
+    FIELD ID DestinationPortField AT (45 PrevTop 30 AUTO)
+        EDITABLE
+        SINGLELINE
+        UNDERLINED
+        NUMERIC
+        MAXCHARS 5
+
+    BUTTON "OK" DestinationOKButton AT (5 56 30 AUTO) FRAME
+    BUTTON "Cancel" DestinationCancelButton AT (PrevRight+3 PrevTop 30 AUTO)
+
+    GRAFFITISTATEINDICATOR AT (145 59)
 END

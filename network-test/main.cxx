@@ -9,8 +9,6 @@ void OnSelectCommand(FormType* form, const char* command) {
     ControlType* buttonCtl =
         static_cast<ControlType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, ConfigButton)));
 
-    LOG("select ---- %s", command);
-
     if (StrCompare(command, CMD_TEST_SEND_PB) == 0)
         CtlShowControl(buttonCtl);
     else
@@ -30,6 +28,14 @@ void DispatchCommand(FormType* form) {
         TestReceivePB();
     else if (StrCompare(command, CMD_TEST_SEND_PB) == 0)
         TestSendPB();
+}
+
+void DispatchDestinationModal() {
+    FormType* destinatinForm = FrmInitForm(DestinationForm);
+
+    FrmDoDialog(destinatinForm);
+
+    FrmDeleteForm(destinatinForm);
 }
 
 Boolean MainFormHandler(EventType* event) {
@@ -75,6 +81,10 @@ Boolean MainFormHandler(EventType* event) {
 
                 case ClearButton:
                     Clear(form);
+                    break;
+
+                case ConfigButton:
+                    DispatchDestinationModal();
                     break;
             }
 
