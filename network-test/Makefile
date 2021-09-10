@@ -9,7 +9,7 @@ LDFLAGS =
 PILRCOPT = -q -ro
 
 NAME = nettest
-SOURCE = main.cxx debug.cxx
+SOURCE = main.cxx debug.cxx command.cxx field.cxx
 PILRC_SOURCE = nettest.rcp
 RESOURCE_HEADERS = resource.h
 

@@ -1,5 +1,7 @@
 #include "debug.h"
 
+#include <stdarg.h>
+
 #ifdef DEBUG
 
 void DebugLog(const char* fmt, ...) {

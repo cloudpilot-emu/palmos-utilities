@@ -2,7 +2,6 @@
 #define _DEBUG_H_
 
 #include <PalmOS.h>
-#include <stdarg.h>
 
 #ifdef DEBUG
     #define LOG DebugLog
