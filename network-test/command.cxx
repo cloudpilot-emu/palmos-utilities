@@ -85,5 +85,3 @@ cleanup:
 
     Printf("\n");
 }
-
-void TestDmSend() { Printf("Testing NetLibDmSend...\n\n"); }

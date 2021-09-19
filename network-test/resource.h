@@ -17,4 +17,3 @@
 #define CMD_TEST_SOCKET_OPTION_GET "SockOptGet"
 #define CMD_TEST_RECEIVE_PB "ReceivePB"
 #define CMD_TEST_SEND_PB "SendPB"
-#define CMD_TEST_DM_SEND "DmSend"

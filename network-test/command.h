@@ -7,6 +7,4 @@ void TestReceivePB();
 
 void TestSendPB();
 
-void TestDmSend();
-
 #endif  // _COMMAND_H_

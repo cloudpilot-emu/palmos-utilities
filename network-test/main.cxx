@@ -1,9 +1,11 @@
 #include <PalmOS.h>
 
 #include "command.h"
+#include "db.h"
 #include "debug.h"
 #include "field.h"
 #include "resource.h"
+#include "util.h"
 
 void OnSelectCommand(FormType* form, const char* command) {
     ControlType* buttonCtl =
@@ -22,20 +24,51 @@ void DispatchCommand(FormType* form) {
     const char* command = CtlGetLabel(triggerCtl);
     if (StrCompare(command, CMD_TEST_SOCKET_OPTION_GET) == 0)
         TestSocketOptionGet();
-    else if (StrCompare(command, CMD_TEST_DM_SEND) == 0)
-        TestDmSend();
     else if (StrCompare(command, CMD_TEST_RECEIVE_PB) == 0)
         TestReceivePB();
     else if (StrCompare(command, CMD_TEST_SEND_PB) == 0)
         TestSendPB();
 }
 
-void DispatchDestinationModal() {
-    FormType* destinatinForm = FrmInitForm(DestinationForm);
+bool DispatchDestinationModal(DB::Address& address) {
+    FormType* destinationForm = FrmInitForm(DestinationForm);
 
-    FrmDoDialog(destinatinForm);
+    FieldType* ipField = static_cast<FieldType*>(FrmGetObjectPtr(
+        destinationForm, FrmGetObjectIndex(destinationForm, DestinationAddressField)));
 
-    FrmDeleteForm(destinatinForm);
+    MemHandle handle = MemHandleNew(FldGetMaxChars(ipField));
+    MemPtr ptr = MemHandleLock(handle);
+    StrCopy(static_cast<char*>(ptr), address.ip);
+    MemHandleUnlock(handle);
+
+    FldSetTextHandle(ipField, handle);
+
+    FieldType* portField = static_cast<FieldType*>(
+        FrmGetObjectPtr(destinationForm, FrmGetObjectIndex(destinationForm, DestinationPortField)));
+
+    handle = MemHandleNew(FldGetMaxChars(portField));
+    ptr = MemHandleLock(handle);
+    StrPrintF(static_cast<char*>(ptr), "%u", address.port);
+    MemHandleUnlock(handle);
+
+    FldSetTextHandle(portField, handle);
+
+    bool save = FrmDoDialog(destinationForm) == DestinationOKButton;
+    if (save) {
+        StrCopy(address.ip, FldGetTextPtr(ipField));
+        address.port = min<UInt32>(StrAToI(FldGetTextPtr(portField)), 0xffff);
+    }
+
+    FrmDeleteForm(destinationForm);
+
+    return save;
+}
+
+void DispachDestinationSendPBModel() {
+    DB::Address address;
+    DB::Get().GetDestinationSendPB(address);
+
+    if (DispatchDestinationModal(address)) DB::Get().SetDestinationSendPB(address);
 }
 
 Boolean MainFormHandler(EventType* event) {
@@ -84,7 +117,7 @@ Boolean MainFormHandler(EventType* event) {
                     break;
 
                 case ConfigButton:
-                    DispatchDestinationModal();
+                    DispachDestinationSendPBModel();
                     break;
             }
 
@@ -107,7 +140,8 @@ UInt32 PilotMain(UInt16 cmd, void* cmdPBP, UInt16 launchFlags) {
         EventType event;
         Err err;
 
-        LOG("event loop running...");
+        LOG("started");
+        DB::Get().Initialize();
 
         FrmGotoForm(MainForm);
 

@@ -17,10 +17,9 @@ BEGIN
         CMD_TEST_SOCKET_OPTION_GET
         CMD_TEST_RECEIVE_PB
         CMD_TEST_SEND_PB
-        CMD_TEST_DM_SEND
         ID CommandList
         AT (1 147 AUTO AUTO)
-        VISIBLEITEMS 4
+        VISIBLEITEMS 3
         NONUSABLE
 
     POPUPLIST CommandTrigger CommandList
