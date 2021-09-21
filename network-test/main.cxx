@@ -66,9 +66,9 @@ bool DispatchDestinationModal(DB::Address& address) {
 
 void DispachDestinationSendPBModel() {
     DB::Address address;
-    DB::Get().GetDestinationSendPB(address);
+    db.GetDestinationSendPB(address);
 
-    if (DispatchDestinationModal(address)) DB::Get().SetDestinationSendPB(address);
+    if (DispatchDestinationModal(address)) db.SetDestinationSendPB(address);
 }
 
 Boolean MainFormHandler(EventType* event) {
@@ -141,7 +141,7 @@ UInt32 PilotMain(UInt16 cmd, void* cmdPBP, UInt16 launchFlags) {
         Err err;
 
         LOG("started");
-        DB::Get().Initialize();
+        db.Initialize();
 
         FrmGotoForm(MainForm);
 

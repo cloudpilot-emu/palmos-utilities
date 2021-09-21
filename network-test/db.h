@@ -11,10 +11,7 @@ class DB {
     };
 
    public:
-    static DB& Get() {
-        static DB instance;
-        return instance;
-    }
+    DB() : ref(0) {}
 
     bool Initialize();
 
@@ -28,8 +25,6 @@ class DB {
     DmOpenRef ref;
 
    private:
-    DB() : ref(0) {}
-
     void GetAddress(UInt16 idx, Address& target);
     void SetAddress(UInt16 idx, const Address& address);
 
@@ -37,5 +32,7 @@ class DB {
     DB(const DB&);
     DB& operator=(const DB&);
 };
+
+extern DB db;
 
 #endif  // _DB_H_

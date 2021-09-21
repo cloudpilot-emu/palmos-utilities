@@ -2,11 +2,9 @@
 
 #include <PalmOS.h>
 
+#include "db.h"
 #include "debug.h"
 #include "field.h"
-
-static const char* REMOTE_IP = "127.0.0.1";
-static const UInt16 REMOTE_PORT = 6666;
 
 void TestSocketOptionGet() { Printf("Testing NetLibSocketOptionGet...\n\n"); }
 
@@ -17,6 +15,9 @@ void TestSendPB() {
     Err err;
     static const char* words[] = {"one ", "two ", "three "};
     const UInt8 wordCount = 5;
+
+    DB::Address destination;
+    db.GetDestinationSendPB(destination);
 
     Printf("Testing NetLibSendPB...\n\n");
 
@@ -34,7 +35,13 @@ void TestSendPB() {
         return;
     }
 
-    Printf("connecting to %s:%u\n", REMOTE_IP, REMOTE_PORT);
+    NetIPAddr ipAddr = NetLibAddrAToIN(refNum, destination.ip);
+    if (static_cast<Int32>(ipAddr) < 0) {
+        Printf("invalid IP address %s\n", destination.ip);
+        goto cleanup;
+    }
+
+    Printf("connecting to %s:%u\n", destination.ip, destination.port);
 
     socket = NetLibSocketOpen(refNum, netSocketAddrINET, netSocketTypeStream, netSocketProtoIPTCP,
                               -1, &err);
@@ -45,8 +52,8 @@ void TestSendPB() {
 
     NetSocketAddrINType addr;
     addr.family = netSocketAddrINET;
-    addr.addr = NetLibAddrAToIN(refNum, REMOTE_IP);
-    addr.port = REMOTE_PORT;
+    addr.addr = ipAddr;
+    addr.port = destination.port;
     if (NetLibSocketConnect(refNum, socket, reinterpret_cast<NetSocketAddrType*>(&addr),
                             sizeof(addr), -1, &err) != 0) {
         Printf("failed to connect\n");

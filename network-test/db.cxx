@@ -9,6 +9,8 @@
 
 #include "debug.h"
 
+DB db;
+
 bool DB::Initialize() {
     LOG("init DB");
 
