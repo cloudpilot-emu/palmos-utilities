@@ -8,7 +8,92 @@
 
 void TestSocketOptionGet() { Printf("Testing NetLibSocketOptionGet...\n\n"); }
 
-void TestReceivePB() { Printf("Testing NetLibReceivePB...\n\n"); }
+void TestReceivePB() {
+    NetSocketRef socket = -1;
+    Err err;
+
+    Printf("Testing NetLibReceivePB...\n\n");
+
+    DB::Address destination;
+    db.GetDestinationReceivePB(destination);
+
+    Printf("Testing NetLibSendPB...\n\n");
+
+    Printf("opening netlib...\n");
+
+    UInt16 refNum;
+    if (SysLibFind("Net.lib", &refNum) != 0) {
+        Printf("Net.lib not found\n");
+        return;
+    }
+
+    UInt16 ifErr;
+    if (NetLibOpen(refNum, &ifErr) != 0) {
+        Printf("failed to open netlib\n");
+        return;
+    }
+
+    NetIPAddr ipAddr = NetLibAddrAToIN(refNum, destination.ip);
+    if (static_cast<Int32>(ipAddr) < 0) {
+        Printf("invalid IP address %s\n", destination.ip);
+        goto cleanup;
+    }
+
+    Printf("connecting to %s:%u\n", destination.ip, destination.port);
+
+    socket = NetLibSocketOpen(refNum, netSocketAddrINET, netSocketTypeStream, netSocketProtoIPTCP,
+                              -1, &err);
+    if (err != 0) {
+        Printf("failed to open socket\n");
+        goto cleanup;
+    }
+
+    NetSocketAddrINType addrConnect;
+    addrConnect.family = netSocketAddrINET;
+    addrConnect.addr = ipAddr;
+    addrConnect.port = destination.port;
+    if (NetLibSocketConnect(refNum, socket, reinterpret_cast<NetSocketAddrType*>(&addrConnect),
+                            sizeof(addrConnect), -1, &err) != 0) {
+        Printf("failed to connect\n");
+        goto cleanup;
+    }
+
+    NetIOVecType chunks[4];
+    UInt8 buffer[256];
+    MemSet(buffer, 256, 0);
+
+    for (int i = 0; i < 4; i++) {
+        chunks[i].bufLen = 63;
+        chunks[i].bufP = buffer + i * 64;
+    }
+
+    NetIOParamType params;
+    params.addrP = 0;
+    params.addrLen = 0;
+    params.iov = chunks;
+    params.iovLen = 4;
+    params.accessRights = 0;
+    params.accessRightsLen = 0;
+
+    Int16 bytesReceived;
+    bytesReceived = NetLibReceivePB(refNum, socket, &params, 0, 0, &err);
+    if (bytesReceived < 0) {
+        Printf("failed to receive\n");
+        goto cleanup;
+    }
+
+    Printf("received %i bytes\n", bytesReceived);
+
+    for (int i = 0; i < 4; i++) {
+        Printf("chunk %i: %s\n", i, params.iov[i].bufP);
+    }
+
+cleanup:
+    if (socket > 0) NetLibSocketClose(refNum, socket, -1, &err);
+    NetLibClose(refNum, true);
+
+    Printf("\n");
+}
 
 void TestSendPB() {
     NetSocketRef socket = -1;

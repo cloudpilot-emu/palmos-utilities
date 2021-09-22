@@ -11,7 +11,7 @@ void OnSelectCommand(FormType* form, const char* command) {
     ControlType* buttonCtl =
         static_cast<ControlType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, ConfigButton)));
 
-    if (StrCompare(command, CMD_TEST_SEND_PB) == 0)
+    if (StrCompare(command, CMD_TEST_SEND_PB) == 0 || StrCompare(command, CMD_TEST_RECEIVE_PB) == 0)
         CtlShowControl(buttonCtl);
     else
         CtlHideControl(buttonCtl);
@@ -64,11 +64,29 @@ bool DispatchDestinationModal(DB::Address& address) {
     return save;
 }
 
-void DispachDestinationSendPBModel() {
+void DispachDestinationReceivePBModal() {
+    DB::Address address;
+    db.GetDestinationReceivePB(address);
+
+    if (DispatchDestinationModal(address)) db.SetDestinationReceivePB(address);
+}
+
+void DispachDestinationSendPBModal() {
     DB::Address address;
     db.GetDestinationSendPB(address);
 
     if (DispatchDestinationModal(address)) db.SetDestinationSendPB(address);
+}
+
+void DispatchConfigModal(FormType* form) {
+    ControlType* triggerCtl =
+        static_cast<ControlType*>(FrmGetObjectPtr(form, FrmGetObjectIndex(form, CommandTrigger)));
+
+    const char* command = CtlGetLabel(triggerCtl);
+    if (StrCompare(command, CMD_TEST_RECEIVE_PB) == 0)
+        DispachDestinationReceivePBModal();
+    else if (StrCompare(command, CMD_TEST_SEND_PB) == 0)
+        DispachDestinationSendPBModal();
 }
 
 Boolean MainFormHandler(EventType* event) {
@@ -117,7 +135,7 @@ Boolean MainFormHandler(EventType* event) {
                     break;
 
                 case ConfigButton:
-                    DispachDestinationSendPBModel();
+                    DispatchConfigModal(form);
                     break;
             }
 
