@@ -14,6 +14,6 @@
 #define DestinationAddressField 3003
 #define DestinationPortField 3004
 
-#define CMD_TEST_SOCKET_OPTION_GET "SockOptGet"
+#define CMD_TEST_SOCKET_OPTION_GET "SOptGet/Set"
 #define CMD_TEST_RECEIVE_PB "ReceivePB"
 #define CMD_TEST_SEND_PB "SendPB"

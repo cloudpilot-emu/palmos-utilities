@@ -6,7 +6,171 @@
 #include "debug.h"
 #include "field.h"
 
-void TestSocketOptionGet() { Printf("Testing NetLibSocketOptionGet...\n\n"); }
+void TestSocketOptionGet() {
+#define ASSERT(message, expected, actual)                                      \
+    if (expected != actual) {                                                  \
+        Printf("assertion failed: " message ": %u != %u\n", expected, actual); \
+        goto cleanup;                                                          \
+    }
+
+#define REFRESH_SOCKET()                                                                           \
+    if (socket > 0) NetLibSocketClose(refNum, socket, -1, &err);                                   \
+    socket = NetLibSocketOpen(refNum, netSocketAddrINET, netSocketTypeStream, netSocketProtoIPTCP, \
+                              -1, &err);                                                           \
+    if (err != 0) {                                                                                \
+        Printf("failed to open socket\n");                                                         \
+        goto cleanup;                                                                              \
+    }
+
+    NetSocketRef socket = -1;
+    Err err;
+
+    UInt8 u8val;
+    UInt16 u16val;
+    UInt32 u32val;
+    UInt16 len;
+    NetSocketLingerType linger;
+    const char* ipOptions = "\x9f\x0c\x00\x01\x00\x00RTGAME";
+    char optionsBuffer[40];
+
+    Printf("Testing NetLibSocketOptionGet/Set...\n\n");
+    Printf("opening netlib...\n");
+
+    UInt16 refNum;
+    if (SysLibFind("Net.lib", &refNum) != 0) {
+        Printf("Net.lib not found\n");
+        return;
+    }
+
+    UInt16 ifErr;
+    if (NetLibOpen(refNum, &ifErr) != 0) {
+        Printf("failed to open netlib\n");
+        return;
+    }
+
+    socket = NetLibSocketOpen(refNum, netSocketAddrINET, netSocketTypeStream, netSocketProtoIPTCP,
+                              -1, &err);
+    if (err != 0) {
+        Printf("failed to open socket\n");
+        goto cleanup;
+    }
+
+    Printf("netSocketOptSockNonBlocking...\n");
+
+    len = sizeof(u8val);
+    NetLibSocketOptionGet(refNum, socket, netSocketOptLevelSocket, netSocketOptSockNonBlocking,
+                          &u8val, &len, 0, &err);
+    ASSERT("NetLibSocketOptionGet failed", 0, err);
+    ASSERT("initial value", 0, u8val);
+
+    u8val = 1;
+    NetLibSocketOptionSet(refNum, socket, netSocketOptLevelSocket, netSocketOptSockNonBlocking,
+                          &u8val, sizeof(u8val), 0, &err);
+    ASSERT("NetLibSocketOptionSet failed", 0, err);
+
+    len = sizeof(u8val);
+    u8val = 0;
+    NetLibSocketOptionGet(refNum, socket, netSocketOptLevelSocket, netSocketOptSockNonBlocking,
+                          &u8val, &len, 0, &err);
+    ASSERT("NetLibSocketOptionGet failed", 0, err);
+    ASSERT("true (u8)", 1, u8val);
+
+    u16val = 1;
+    NetLibSocketOptionSet(refNum, socket, netSocketOptLevelSocket, netSocketOptSockNonBlocking,
+                          &u16val, sizeof(u16val), 0, &err);
+    ASSERT("NetLibSocketOptionSet failed", 0, err);
+
+    len = sizeof(u16val);
+    u16val = 0;
+    NetLibSocketOptionGet(refNum, socket, netSocketOptLevelSocket, netSocketOptSockNonBlocking,
+                          &u16val, &len, 0, &err);
+    ASSERT("NetLibSocketOptionGet failed", 0, err);
+    ASSERT("true (u16)", 1, u16val);
+
+    u32val = 1;
+    NetLibSocketOptionSet(refNum, socket, netSocketOptLevelSocket, netSocketOptSockNonBlocking,
+                          &u32val, sizeof(u32val), 0, &err);
+    ASSERT("NetLibSocketOptionSet failed", 0, err);
+
+    len = sizeof(u32val);
+    u32val = 0;
+    NetLibSocketOptionGet(refNum, socket, netSocketOptLevelSocket, netSocketOptSockNonBlocking,
+                          &u32val, &len, 0, &err);
+    ASSERT("NetLibSocketOptionGet failed", 0, err);
+    ASSERT("true (u32)", 1, u32val);
+
+    Printf("netSocketOptTCPMaxSeg...\n");
+
+    u16val = 256;
+    NetLibSocketOptionSet(refNum, socket, netSocketOptLevelTCP, netSocketOptTCPMaxSeg, &u16val,
+                          sizeof(u16val), 0, &err);
+    ASSERT("NetLibSocketOptionSet failed", 0, err);
+
+    len = sizeof(u16val);
+    u16val = 0;
+    NetLibSocketOptionGet(refNum, socket, netSocketOptLevelTCP, netSocketOptTCPMaxSeg, &u16val,
+                          &len, 0, &err);
+    ASSERT("NetLibSocketOptionGet failed", 0, err);
+    ASSERT("256 (u16)", 256, u16val);
+
+    REFRESH_SOCKET();
+
+    u32val = 512;
+    NetLibSocketOptionSet(refNum, socket, netSocketOptLevelTCP, netSocketOptTCPMaxSeg, &u32val,
+                          sizeof(u32val), 0, &err);
+    ASSERT("NetLibSocketOptionSet failed", 0, err);
+
+    len = sizeof(u32val);
+    u32val = 0;
+    NetLibSocketOptionGet(refNum, socket, netSocketOptLevelTCP, netSocketOptTCPMaxSeg, &u32val,
+                          &len, 0, &err);
+    ASSERT("NetLibSocketOptionGet failed", 0, err);
+    ASSERT("512 (u32)", 512, u32val);
+
+    Printf("netSocketOptSockLinger...\n");
+
+    linger.onOff = 1;
+    linger.time = 10;
+    NetLibSocketOptionSet(refNum, socket, netSocketOptLevelSocket, netSocketOptSockLinger, &linger,
+                          sizeof(linger), 0, &err);
+    ASSERT("NetLibSocketOptionSet failed", 0, err);
+
+    len = sizeof(linger);
+    linger.onOff = 0;
+    linger.time = 0;
+    NetLibSocketOptionGet(refNum, socket, netSocketOptLevelSocket, netSocketOptSockLinger, &linger,
+                          &len, 0, &err);
+
+    ASSERT("NetLibSocketOptionGet failed", 0, err);
+    ASSERT("linger.onOff", 1, linger.onOff);
+    ASSERT("linger.time", 10, linger.time);
+
+    Printf("netSocketOptLevelIP...\n");
+
+    NetLibSocketOptionSet(refNum, socket, netSocketOptLevelIP, netSocketOptIPOptions,
+                          (void*)ipOptions, 12, 0, &err);
+    ASSERT("NetLibSocketOptionGet failed", 0, err);
+
+    len = 40;
+    NetLibSocketOptionGet(refNum, socket, netSocketOptLevelIP, netSocketOptIPOptions,
+                          &optionsBuffer, &len, 0, &err);
+    ASSERT("NetLibSocketOptionGet failed", 0, err);
+    if (len < 12 || MemCmp(ipOptions, optionsBuffer + len - 12, 12) != 0) {
+        Printf("assertion failed: options mismatch");
+        goto cleanup;
+    }
+
+    Printf("\n...all passed");
+
+cleanup:
+    if (socket > 0) NetLibSocketClose(refNum, socket, -1, &err);
+    NetLibClose(refNum, true);
+
+    Printf("\n");
+
+#undef ASSERT
+#undef REFRESH_SOCKET
+}
 
 void TestReceivePB() {
     NetSocketRef socket = -1;
