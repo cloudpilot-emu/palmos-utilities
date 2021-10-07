@@ -7,4 +7,6 @@ void TestReceivePB();
 
 void TestSendPB();
 
+void ShowNameserver();
+
 #endif  // _COMMAND_H_

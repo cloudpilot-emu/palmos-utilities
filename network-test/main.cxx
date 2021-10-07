@@ -28,6 +28,8 @@ void DispatchCommand(FormType* form) {
         TestReceivePB();
     else if (StrCompare(command, CMD_TEST_SEND_PB) == 0)
         TestSendPB();
+    else if (StrCompare(command, CMD_NAMESERVER) == 0)
+        ShowNameserver();
 }
 
 bool DispatchDestinationModal(DB::Address& address) {

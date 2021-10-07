@@ -341,3 +341,33 @@ cleanup:
 
     Printf("\n");
 }
+
+void ShowNameserver() {
+    Printf("opening netlib...\n");
+
+    UInt16 refNum;
+    if (SysLibFind("Net.lib", &refNum) != 0) {
+        Printf("Net.lib not found\n");
+        return;
+    }
+
+    UInt16 ifErr;
+    if (NetLibOpen(refNum, &ifErr) != 0) {
+        Printf("failed to open netlib\n");
+        return;
+    }
+
+    UInt32 dns;
+    UInt16 len = sizeof(dns);
+    char buffer[16];
+
+    if (NetLibSettingGet(refNum, netSettingPrimaryDNS, &dns, &len) == 0) {
+        NetLibAddrINToA(refNum, dns, buffer);
+
+        Printf("Primary DNS: %s\n", buffer);
+    } else {
+        Printf("failed to get primary DNS\n");
+    }
+
+    NetLibClose(refNum, true);
+}

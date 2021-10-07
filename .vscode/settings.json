@@ -2,5 +2,6 @@
     "files.associations": {
         "palmos.h": "c"
     },
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "C_Cpp.errorSquiggles": "Enabled"
 }
