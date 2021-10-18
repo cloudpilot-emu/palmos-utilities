@@ -1,0 +1,6 @@
+#include "resource.h"
+
+FORM MainForm AT (0 0 160 160)
+BEGIN
+    BUTTON "Crash!" CrashButton AT(60 70 AUTO AUTO) FRAME
+END
