@@ -2,5 +2,17 @@
 
 FORM MainForm AT (0 0 160 160)
 BEGIN
-    BUTTON "Crash!" CrashButton AT(60 70 AUTO AUTO) FRAME
+    POPUPTRIGGER MODE_BAD_STACK ID ModeTrigger AT (20 60 120 AUTO)
+
+    LIST
+        MODE_BAD_STACK
+        MODE_PROTECTION
+        ID ModeList
+        AT (20 60 AUTO AUTO)
+        VISIBLEITEMS 2
+        NONUSABLE
+
+    POPUPLIST ModeTrigger ModeList
+
+    BUTTON "Crash!" CrashButton AT(60 80 AUTO AUTO) FRAME
 END
