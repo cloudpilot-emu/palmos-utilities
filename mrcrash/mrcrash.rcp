@@ -7,9 +7,10 @@ BEGIN
     LIST
         MODE_BAD_STACK
         MODE_PROTECTION
+        MODE_UNMAPPED_ADDRESS
         ID ModeList
         AT (20 60 AUTO AUTO)
-        VISIBLEITEMS 2
+        VISIBLEITEMS 3
         NONUSABLE
 
     POPUPLIST ModeTrigger ModeList

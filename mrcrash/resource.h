@@ -6,3 +6,4 @@
 
 #define MODE_BAD_STACK "Exception w. bad stack"
 #define MODE_PROTECTION "Protection failure"
+#define MODE_UNMAPPED_ADDRESS "Unmapped address"

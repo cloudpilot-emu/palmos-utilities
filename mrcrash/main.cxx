@@ -19,8 +19,13 @@ void CrashProtectionFailure() {
     handle = DmQueryRecord(ref, idx);
     MemPtr ptr = MemHandleLock(handle);
 
-    DebugLog("Triggering protection fault now");
+    LOG("Triggering protection fault now");
     *static_cast<UInt8*>(ptr) = 0;
+}
+
+void CrashUnmappedAddress() {
+    UInt8* bad = (UInt8*)0xfefe0000;
+    *bad = 0;
 }
 
 void Crash(FormType* form) {
@@ -33,6 +38,8 @@ void Crash(FormType* form) {
         CrashExceptionWithBadStack();
     else if (StrCompare(mode, MODE_PROTECTION) == 0)
         CrashProtectionFailure();
+    else if (StrCompare(mode, MODE_UNMAPPED_ADDRESS) == 0)
+        CrashUnmappedAddress();
 }
 
 Boolean MainFormHandler(EventType* event) {
