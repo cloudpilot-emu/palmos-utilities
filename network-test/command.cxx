@@ -208,7 +208,7 @@ void TestReceivePB() {
     socket = NetLibSocketOpen(refNum, netSocketAddrINET, netSocketTypeStream, netSocketProtoIPTCP,
                               -1, &err);
     if (err != 0) {
-        Printf("failed to open socket\n");
+        Printf("failed to open socket: %i\n", err);
         goto cleanup;
     }
 
@@ -218,7 +218,7 @@ void TestReceivePB() {
     addrConnect.port = destination.port;
     if (NetLibSocketConnect(refNum, socket, reinterpret_cast<NetSocketAddrType*>(&addrConnect),
                             sizeof(addrConnect), -1, &err) != 0) {
-        Printf("failed to connect\n");
+        Printf("failed to connect: %i\n", err);
         goto cleanup;
     }
 
@@ -239,10 +239,12 @@ void TestReceivePB() {
     params.accessRights = 0;
     params.accessRightsLen = 0;
 
+    Printf("receiving...\n");
+
     Int16 bytesReceived;
-    bytesReceived = NetLibReceivePB(refNum, socket, &params, 0, 0, &err);
+    bytesReceived = NetLibReceivePB(refNum, socket, &params, 0, -1, &err);
     if (bytesReceived < 0) {
-        Printf("failed to receive\n");
+        Printf("failed to receive: %i\n", err);
         goto cleanup;
     }
 
@@ -295,7 +297,7 @@ void TestSendPB() {
     socket = NetLibSocketOpen(refNum, netSocketAddrINET, netSocketTypeStream, netSocketProtoIPTCP,
                               -1, &err);
     if (err != 0) {
-        Printf("failed to open socket\n");
+        Printf("failed to open socket: %i\n", err);
         goto cleanup;
     }
 
@@ -305,7 +307,7 @@ void TestSendPB() {
     addr.port = destination.port;
     if (NetLibSocketConnect(refNum, socket, reinterpret_cast<NetSocketAddrType*>(&addr),
                             sizeof(addr), -1, &err) != 0) {
-        Printf("failed to connect\n");
+        Printf("failed to connect: %i\n", err);
         goto cleanup;
     }
 
@@ -333,7 +335,7 @@ void TestSendPB() {
     if (bytesSent > 0)
         Printf("successfully sent %i bytes\n", bytesSent);
     else
-        Printf("failed to send\n");
+        Printf("failed to send: %i\n", err);
 
 cleanup:
     if (socket > 0) NetLibSocketClose(refNum, socket, -1, &err);
