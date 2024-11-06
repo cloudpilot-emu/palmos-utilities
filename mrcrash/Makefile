@@ -9,7 +9,7 @@ LDFLAGS =
 PILRCOPT = -q -ro
 
 NAME = mrcrash
-SOURCE = main.cxx debug.cxx bad_stack.cxx
+SOURCE = main.cxx debug.cxx assembly.cxx
 PILRC_SOURCE = mrcrash.rcp
 RESOURCE_HEADERS = resource.h
 

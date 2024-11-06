@@ -1,6 +1,6 @@
 #include <PalmOS.h>
 
-#include "bad_stack.h"
+#include "assembly.h"
 #include "debug.h"
 #include "resource.h"
 
@@ -40,6 +40,26 @@ void Crash(FormType* form) {
         CrashProtectionFailure();
     else if (StrCompare(mode, MODE_UNMAPPED_ADDRESS) == 0)
         CrashUnmappedAddress();
+    else if (StrCompare(mode, MODE_DIVISION_BY_ZERO_DIVU) == 0)
+        CrashDivideByZeroUnsigned();
+    else if (StrCompare(mode, MODE_DIVISION_BY_ZERO_DIVS) == 0)
+        CrashDivideByZeroUnsigned();
+    else if (StrCompare(mode, MODE_INVALID_INSTRUCTION) == 0)
+        CrashInvalidIstruction();
+    else if (StrCompare(mode, MODE_LINE_1010) == 0)
+        CrashLine1010();
+    else if (StrCompare(mode, MODE_LINE_1111) == 0)
+        CrashLine1111();
+    else if (StrCompare(mode, MODE_TRAP_0) == 0)
+        CrashTrap0();
+    else if (StrCompare(mode, MODE_TRAP_8) == 0)
+        CrashTrap8();
+    else if (StrCompare(mode, MODE_CHK_FAIL) == 0)
+        CrashChkFail();
+    else if (StrCompare(mode, MODE_TRAPV) == 0)
+        CrashTrapv();
+    else if (StrCompare(mode, MODE_RESET) == 0)
+        CrashReset();
 }
 
 Boolean MainFormHandler(EventType* event) {

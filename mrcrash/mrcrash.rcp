@@ -8,9 +8,20 @@ BEGIN
         MODE_BAD_STACK
         MODE_PROTECTION
         MODE_UNMAPPED_ADDRESS
+        MODE_DIVISION_BY_ZERO_DIVU
+        MODE_DIVISION_BY_ZERO_DIVS
+        MODE_INVALID_INSTRUCTION
+        MODE_LINE_1010
+        MODE_LINE_1111
+        MODE_TRAP_0
+        MODE_TRAP_8
+        MODE_CHK_FAIL
+        MODE_TRAPV
+        MODE_RESET
+
         ID ModeList
         AT (20 60 AUTO AUTO)
-        VISIBLEITEMS 3
+        VISIBLEITEMS 6
         NONUSABLE
 
     POPUPLIST ModeTrigger ModeList
