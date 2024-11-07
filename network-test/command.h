@@ -9,4 +9,6 @@ void TestSendPB();
 
 void ShowNameserver();
 
+void GetHostByName();
+
 #endif  // _COMMAND_H_

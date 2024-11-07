@@ -373,3 +373,42 @@ void ShowNameserver() {
 
     NetLibClose(refNum, true);
 }
+
+void GetHostByName() {
+    Printf("opening netlib...\n");
+
+    UInt16 refNum;
+    if (SysLibFind("Net.lib", &refNum) != 0) {
+        Printf("Net.lib not found\n");
+        return;
+    }
+
+    UInt16 ifErr;
+    if (NetLibOpen(refNum, &ifErr) != 0) {
+        Printf("failed to open netlib\n");
+        return;
+    }
+
+    Printf("resolving www.google.de...\n");
+
+    NetHostInfoBufType buf;
+    Err err;
+
+    NetHostInfoPtr infobuf = NetLibGetHostByName(refNum, "www.google.de", &buf, -1, &err);
+    if (!infobuf) {
+        Printf("lookup failed: %i\n", err);
+    } else {
+        Printf("reported name: %s\n", infobuf->nameP);
+
+        for (int i = 0; infobuf->addrListP[i] != NULL; i++) {
+            Printf("lookup result %i: %i.%i.%i.%i\n", i, infobuf->addrListP[i][0],
+                   infobuf->addrListP[i][1], infobuf->addrListP[i][2], infobuf->addrListP[i][3]);
+        }
+
+        for (int i = 0; infobuf->nameAliasesP[i] != NULL; i++) {
+            Printf("alias %i: %s\n", i, infobuf->nameAliasesP[i]);
+        }
+    }
+
+    NetLibClose(refNum, true);
+}

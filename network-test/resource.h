@@ -18,3 +18,4 @@
 #define CMD_TEST_RECEIVE_PB "ReceivePB"
 #define CMD_TEST_SEND_PB "SendPB"
 #define CMD_NAMESERVER "Nameserver"
+#define CMD_GETHOSTBYNAME "GetHostByName"
