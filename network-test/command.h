@@ -11,4 +11,6 @@ void ShowNameserver();
 
 void GetHostByName();
 
+void GetServByName();
+
 #endif  // _COMMAND_H_

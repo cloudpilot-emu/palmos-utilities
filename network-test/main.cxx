@@ -32,6 +32,8 @@ void DispatchCommand(FormType* form) {
         ShowNameserver();
     else if (StrCompare(command, CMD_GETHOSTBYNAME) == 0)
         GetHostByName();
+    else if (StrCompare(command, CMD_GETSERVBYNAME) == 0)
+        GetServByName();
 }
 
 bool DispatchDestinationModal(DB::Address& address) {

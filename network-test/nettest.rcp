@@ -19,9 +19,10 @@ BEGIN
         CMD_TEST_SEND_PB
         CMD_NAMESERVER
         CMD_GETHOSTBYNAME
+        CMD_GETSERVBYNAME
         ID CommandList
         AT (1 147 AUTO AUTO)
-        VISIBLEITEMS 5
+        VISIBLEITEMS 6
         NONUSABLE
 
     POPUPLIST CommandTrigger CommandList

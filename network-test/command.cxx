@@ -412,3 +412,34 @@ void GetHostByName() {
 
     NetLibClose(refNum, true);
 }
+
+void GetServByName() {
+    Printf("opening netlib...\n");
+
+    UInt16 refNum;
+    if (SysLibFind("Net.lib", &refNum) != 0) {
+        Printf("Net.lib not found\n");
+        return;
+    }
+
+    UInt16 ifErr;
+    if (NetLibOpen(refNum, &ifErr) != 0) {
+        Printf("failed to open netlib\n");
+        return;
+    }
+
+    Printf("Resolving SMTP / TCP\n");
+
+    NetServInfoBufType buf;
+    Err err;
+
+    NetServInfoType* info = NetLibGetServByName(refNum, "smtp", "tcp", &buf, 0, &err);
+
+    if (!info) {
+        Printf("lookup failed with %i\n", err);
+    } else {
+        Printf("lookup returned port %i\n", info->port);
+    }
+
+    NetLibClose(refNum, true);
+}
