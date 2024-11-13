@@ -255,7 +255,7 @@ void TestReceivePB() {
     }
 
 cleanup:
-    if (socket > 0) NetLibSocketClose(refNum, socket, -1, &err);
+    if (socket >= 0) NetLibSocketClose(refNum, socket, -1, &err);
     NetLibClose(refNum, true);
 
     Printf("\n");
@@ -338,7 +338,16 @@ void TestSendPB() {
         Printf("failed to send: %i\n", err);
 
 cleanup:
-    if (socket > 0) NetLibSocketClose(refNum, socket, -1, &err);
+    if (socket >= 0) {
+        if (NetLibSocketShutdown(refNum, socket, netSocketDirBoth, -1, &err) == -1) {
+            Printf("failed to shut down socket: %i\n", err);
+        } else {
+            Printf("socket shut down\n");
+        }
+
+        NetLibSocketClose(refNum, socket, -1, &err);
+    }
+
     NetLibClose(refNum, true);
 
     Printf("\n");
@@ -439,6 +448,36 @@ void GetServByName() {
         Printf("lookup failed with %i\n", err);
     } else {
         Printf("lookup returned port %i\n", info->port);
+    }
+
+    NetLibClose(refNum, true);
+}
+
+void GetHostname() {
+    Printf("opening netlib...\n");
+
+    UInt16 refNum;
+    if (SysLibFind("Net.lib", &refNum) != 0) {
+        Printf("Net.lib not found\n");
+        return;
+    }
+
+    UInt16 ifErr;
+    if (NetLibOpen(refNum, &ifErr) != 0) {
+        Printf("failed to open netlib\n");
+        return;
+    }
+
+    Printf("retrieving hostname...\n");
+
+    char hostname[64];
+    UInt16 valueLen = sizeof(hostname);
+
+    Err err = NetLibSettingGet(refNum, netSettingHostName, hostname, &valueLen);
+    if (err != errNone) {
+        Printf("failed with error %i\n", err);
+    } else {
+        Printf("hostname: %s\n", hostname);
     }
 
     NetLibClose(refNum, true);

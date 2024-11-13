@@ -20,9 +20,10 @@ BEGIN
         CMD_NAMESERVER
         CMD_GETHOSTBYNAME
         CMD_GETSERVBYNAME
+        CMD_GETHOSTNAME
         ID CommandList
         AT (1 147 AUTO AUTO)
-        VISIBLEITEMS 6
+        VISIBLEITEMS 5
         NONUSABLE
 
     POPUPLIST CommandTrigger CommandList

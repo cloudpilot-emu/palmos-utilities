@@ -20,3 +20,4 @@
 #define CMD_NAMESERVER "Nameserver"
 #define CMD_GETHOSTBYNAME "GetHostByName"
 #define CMD_GETSERVBYNAME "GetServByName"
+#define CMD_GETHOSTNAME "Hostname"

@@ -13,4 +13,6 @@ void GetHostByName();
 
 void GetServByName();
 
+void GetHostname();
+
 #endif  // _COMMAND_H_
